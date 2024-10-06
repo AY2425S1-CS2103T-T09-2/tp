@@ -66,7 +66,6 @@ public class AddCommand extends Command {
             return true;
         }
 
-        // instanceof handles nulls
         if (!(other instanceof AddCommand)) {
             return false;
         }
