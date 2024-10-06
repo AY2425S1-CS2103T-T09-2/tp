@@ -20,6 +20,7 @@ public class Person {
     private final Name name;
     private final Phone phone;
     private final Email email;
+    private final Remark remark;
 
     // Data fields
     private final Address address;
@@ -28,13 +29,14 @@ public class Person {
     /**
      * Every field must be present and not null.
      */
-    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
+    public Person(Name name, Phone phone, Email email, Address address, Remark remark, Set<Tag> tags) {
         requireAllNonNull(name, phone, email, address, tags);
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
         this.tags.addAll(tags);
+        this.remark = remark;
     }
 
     public Name getName() {
@@ -78,6 +80,14 @@ public class Person {
      * Returns true if both persons have the same identity and data fields.
      * This defines a stronger notion of equality between two persons.
      */
+    public Remark getRemark() {
+        return remark;
+    }
+
+    /**
+     * Returns true if both persons have the same identity and data fields.
+     * This defines a stronger notion of equality between two persons.
+     */
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -90,8 +100,7 @@ public class Person {
         }
 
         Person otherPerson = (Person) other;
-        return name.equals(otherPerson.name)
-                && phone.equals(otherPerson.phone)
+        return name.equals(otherPerson.name) && phone.equals(otherPerson.phone)
                 && email.equals(otherPerson.email)
                 && address.equals(otherPerson.address)
                 && tags.equals(otherPerson.tags);
@@ -105,13 +114,14 @@ public class Person {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .add("name", name)
-                .add("phone", phone)
-                .add("email", email)
-                .add("address", address)
-                .add("tags", tags)
-                .toString();
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Name: ").append(name).append(", ");
+        sb.append("Phone: ").append(phone).append(", ");
+        sb.append("Email: ").append(email).append(", ");
+        sb.append("Address: ").append(address).append(", ");
+        sb.append("Remark: ").append(remark).append(", ");
+        sb.append("Tags: ").append(tags);
+        return sb.toString();
     }
 
 }
