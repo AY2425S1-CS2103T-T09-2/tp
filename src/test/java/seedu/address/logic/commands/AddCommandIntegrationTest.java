@@ -28,15 +28,17 @@ public class AddCommandIntegrationTest {
 
     @Test
     public void execute_newPerson_success() {
-        Person validPerson = new PersonBuilder().build();
+        // Ensure this person is unique
+        Person validPerson = new PersonBuilder().withName("Unique Name").withPhone("99999999").build();
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.addPerson(validPerson);
 
         assertCommandSuccess(new AddCommand(validPerson), model,
-                String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(validPerson)),
-                expectedModel);
+            String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(validPerson)),
+            expectedModel);
     }
+
 
     @Test
     public void execute_duplicatePerson_throwsCommandException() {

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.person.Address;
+import seedu.address.model.person.DesiredRole;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
@@ -28,19 +29,24 @@ class JsonAdaptedPerson {
     private final String phone;
     private final String email;
     private final String address;
+    private final String desiredRole; // Added the DesiredRole field
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
      */
     @JsonCreator
-    public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
-            @JsonProperty("email") String email, @JsonProperty("address") String address,
-            @JsonProperty("tags") List<JsonAdaptedTag> tags) {
+    public JsonAdaptedPerson(@JsonProperty("name") String name,
+                             @JsonProperty("phone") String phone,
+                             @JsonProperty("email") String email,
+                             @JsonProperty("address") String address,
+                             @JsonProperty("desiredRole") String desiredRole, // Handle DesiredRole field here
+                             @JsonProperty("tags") List<JsonAdaptedTag> tags) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
+        this.desiredRole = desiredRole; // Initialize the DesiredRole field
         if (tags != null) {
             this.tags.addAll(tags);
         }
@@ -54,9 +60,10 @@ class JsonAdaptedPerson {
         phone = source.getPhone().value;
         email = source.getEmail().value;
         address = source.getAddress().value;
+        desiredRole = source.getDesiredRole().value; // Convert the DesiredRole to string
         tags.addAll(source.getTags().stream()
-                .map(JsonAdaptedTag::new)
-                .collect(Collectors.toList()));
+            .map(JsonAdaptedTag::new)
+            .collect(Collectors.toList()));
     }
 
     /**
@@ -70,6 +77,7 @@ class JsonAdaptedPerson {
             personTags.add(tag.toModelType());
         }
 
+        // Validation for Name
         if (name == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Name.class.getSimpleName()));
         }
@@ -78,6 +86,7 @@ class JsonAdaptedPerson {
         }
         final Name modelName = new Name(name);
 
+        // Validation for Phone
         if (phone == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Phone.class.getSimpleName()));
         }
@@ -86,6 +95,7 @@ class JsonAdaptedPerson {
         }
         final Phone modelPhone = new Phone(phone);
 
+        // Validation for Email
         if (email == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Email.class.getSimpleName()));
         }
@@ -94,6 +104,7 @@ class JsonAdaptedPerson {
         }
         final Email modelEmail = new Email(email);
 
+        // Validation for Address
         if (address == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Address.class.getSimpleName()));
         }
@@ -102,8 +113,19 @@ class JsonAdaptedPerson {
         }
         final Address modelAddress = new Address(address);
 
-        final Set<Tag> modelTags = new HashSet<>(personTags);
-        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags);
-    }
+        // Validation for DesiredRole
+        if (desiredRole == null) {
+            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT,
+                DesiredRole.class.getSimpleName()));
+        }
+        if (!DesiredRole.isValidDesiredRole(desiredRole)) {
+            throw new IllegalValueException(DesiredRole.MESSAGE_CONSTRAINTS);
+        }
+        final DesiredRole modelDesiredRole = new DesiredRole(desiredRole);
 
+        final Set<Tag> modelTags = new HashSet<>(personTags);
+
+        // Return the Person object with DesiredRole
+        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelDesiredRole, modelTags);
+    }
 }
